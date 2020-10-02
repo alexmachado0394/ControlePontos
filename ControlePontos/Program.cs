@@ -27,7 +27,7 @@ namespace ControlePontos
                     Console.Write("Insira uma opção: ");
                     opc = int.Parse(Console.ReadLine());
                 }
-                catch (FormatException e)
+                catch (FormatException)
                 {
                     Console.WriteLine("Insira um número");
                     //throw;
@@ -52,11 +52,6 @@ namespace ControlePontos
                         break;
                 }
             } while (opc != 9);
-            
-            
-            
-
-            
         }
 
         static void Cadastrar(List<Jogo> jogos)
@@ -81,18 +76,28 @@ namespace ControlePontos
             id++;
             do
             {
-                Console.WriteLine($"Jogo #{id}:");
                 bool passou;
                 do
                 {
                     try
                     {
+                        Console.WriteLine($"Jogo #{id}:");
                         Console.Write("Resultado: ");
                         resultado = int.Parse(Console.ReadLine());
-                        passou = true;
+                        if (resultado<1000)
+                        {
+                            passou = true;
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Resultado deve ser menor que 1000 pontos!");
+                            passou = false;
+                        }
                     }
-                    catch (FormatException e)
+                    catch (FormatException)
                     {
+                        Console.Clear();
                         Console.WriteLine("Insira um número");
                         passou = false;
                     }
@@ -117,6 +122,7 @@ namespace ControlePontos
                     {
                         continua = true;
                         id++;
+                        Console.Clear();
                     }
                     else if (s.ToUpper() == "N")
                     {
@@ -134,10 +140,27 @@ namespace ControlePontos
         static void Visualizar(List<Jogo> jogos)
         {
             Console.Clear();
-            Console.WriteLine("Id, Resultado, Pior, Melhor, Piorou, Melhorou");
+            Console.WriteLine("---------------------------------------");
+            Console.Write("|");
+            Console.Write("Jogo");
+            Console.Write("|");
+            Console.Write("Placar");
+            Console.Write("|");
+            Console.Write("Míni");
+            Console.Write("|");
+            Console.Write("Máxi");
+            Console.Write("|");
+            Console.Write("Q. min.");
+            Console.Write("|");
+            Console.Write("Q. max.");
+            Console.WriteLine("|");
+            Console.WriteLine("---------------------------------------");
+
+
             foreach (Jogo item in jogos)
             {
                 Console.WriteLine(item);
+                Console.WriteLine("---------------------------------------");
             }
             Console.ReadLine();
             Console.Clear();

@@ -85,7 +85,7 @@ namespace ControlePontos.Classes
 
         public override string ToString()
         {
-            return Id + " , " + Placar + " , " + PiorResultado + " , " + MelhorResultado + " , " + MudouPior + " , " + MudouMelhor;
+            return"| "+Id + "  |  " + Placar + "  | " + PiorResultado + " | " + MelhorResultado + " |   " + MudouPior + "   |   " + MudouMelhor+ "   |";
         }
     }
 }
