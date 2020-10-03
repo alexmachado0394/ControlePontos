@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ControlePontos.Classes
+﻿namespace ControlePontos.Classes
 {
     class Jogo
     {
         public int Id { get; set; }
-        public int Placar { get; private set; }
-        public int PiorResultado { get; private set; }
-        public int MelhorResultado { get; private set; }
-        public int MudouPior { get; private set; }
-        public int MudouMelhor { get; private set; }
+        public int Placar { get; set; }
+        public int PiorResultado { get; set; }
+        public int MelhorResultado { get; set; }
+        public int MudouPior { get; set; }
+        public int MudouMelhor { get; set; }
 
         public Jogo()
         {
@@ -81,11 +75,6 @@ namespace ControlePontos.Classes
                 }
                 else MudouMelhor = mudou;
             }
-        }
-
-        public override string ToString()
-        {
-            return"| "+Id + "  |  " + Placar + "  | " + PiorResultado + " | " + MelhorResultado + " |   " + MudouPior + "   |   " + MudouMelhor+ "   |";
         }
     }
 }
