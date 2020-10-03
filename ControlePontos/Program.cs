@@ -11,7 +11,8 @@ namespace ControlePontos
 {
     class Program
     {
-        static readonly string ConnectionString = "server=localhost;userid=Alexandre;password=159753;database=pontosdb";
+        //String para realizar a conecxão no banco de dados
+        static readonly string ConnectionString = "server=localhost;userid=dev;password=123456;database=pontosdb";
         static void Main(string[] args)
         {
             int opc = 0;
@@ -23,7 +24,7 @@ namespace ControlePontos
                 Console.WriteLine("2- Visualizar Resultados");
                 Console.WriteLine("9- Sair");
 
-
+                //testa se a opção é numérica, retornando um erro caso não seja
                 try
                 {
                     Console.Write("Insira uma opção: ");
@@ -39,16 +40,18 @@ namespace ControlePontos
                 switch (opc)
                 {
                     case 1:
-                        Cadastrar();
+                        Cadastrar();//Inicia o processo de cadastro de resultados
                         break;
                     case 2:
-                        Visualizar();
+                        Visualizar();//consulta todos resultados cadastrados
                         break;
                     case 9:
+                        //encerra a aplicação
                         Console.WriteLine("Tenha um bom dia!");
                         Console.ReadLine();
                         break;
                     default:
+                        //mensagem de erro padrão
                         Console.Clear();
                         Console.WriteLine("não existe essa opção!");
                         break;
@@ -70,6 +73,7 @@ namespace ControlePontos
             var connString = ConnectionString;
             var connection = new MySqlConnection(connString);
 
+            //instancia as variaveis com os valores mais recentes do banco de dados
             try
             {
                 connection.Open();
@@ -93,131 +97,138 @@ namespace ControlePontos
             {
                 Console.WriteLine("Não entrou no Db!");
                 Console.ReadLine();
+                continua = false;
             }
 
-
-            do
+            //Realiza o cadastro do resultado, com o valores máximos e mínimos
+            if (continua)
             {
-                id++;
-                bool passou;
                 do
                 {
-                    try
-                    {
-                        Console.WriteLine($"Jogo #{id}:");
-                        Console.Write("Resultado: ");
-                        jogo.Placar = int.Parse(Console.ReadLine());
-                        if (jogo.Placar < 1000)
-                        {
-                            passou = true;
-                        }
-                        else
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Resultado deve ser menor que 1000 pontos!");
-                            passou = false;
-                        }
-                    }
-                    catch (FormatException)
-                    {
-                        Console.Clear();
-                        Console.WriteLine("Insira um número");
-                        passou = false;
-                    }
-                } while (!passou);
-
-                try
-                {
-                    connection.Open();
-                    var command = new MySqlCommand("INSERT INTO jogo(placar,piorResultado,melhorResultado,mudouPior,MudouMelhor) VALUES(@PLACAR,0,0,0,0)", connection);
-                    command.Parameters.AddWithValue("@PLACAR", jogo.Placar);
-                    command.ExecuteNonQuery();
-                    connection.Close();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Não entrou no Db!");
-                    Console.ReadLine();
-                    continua = false;
-                }
-                
-                try
-                {
-                    connection.Open();
-                    var command = new MySqlCommand("SELECT * FROM pontosdb.jogo where jogo.id = @ID", connection);
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@ID", id);
-
-                    //command.CommandType = CommandType.Text();
-
-                    MySqlDataReader data = command.ExecuteReader();
-                    data.Read();
-
-                    jogo.Id = data.GetInt32(0);
-                    jogo.Placar = data.GetInt32(1);
-
-                    connection.Close();
-                    
-                    
-                    jogo.ResultadoRuim(pior);
-                    jogo.MudouResultadoRuim(pior, mudouRuim);
-                    mudouRuim = jogo.MudouPior;
-                    pior = jogo.PiorResultado;
-                    jogo.ResultadoBom(melhor);
-                    jogo.MudouResultadoBom(melhor, mudouBom);
-                    mudouBom = jogo.MudouMelhor;
-                    melhor = jogo.MelhorResultado;
-
-                    connection.Open();
-
-                    var command2 = new MySqlCommand("UPDATE jogo SET piorResultado = @PIOR, melhorResultado = @MELHOR, mudouPior = @MUDOUP, mudouMelhor = @MUDOUM  WHERE jogo.id = @ID", connection);
-                    command2.Parameters.AddWithValue("@PIOR", jogo.PiorResultado);
-                    command2.Parameters.AddWithValue("@MELHOR", jogo.MelhorResultado);
-                    command2.Parameters.AddWithValue("@MUDOUP", jogo.MudouPior);
-                    command2.Parameters.AddWithValue("@MUDOUM", jogo.MudouMelhor);
-                    command2.Parameters.AddWithValue("@ID", jogo.Id);
-
-                    command2.ExecuteNonQuery();
-
-                    connection.Close();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Falha ao Atualizar "+ e.Message);
-                    Console.ReadLine();
-                    continua = false;
-                }
-
-
-                if (continua)
-                {
-
-                    string s;
+                    id++;
+                    bool passou;
                     do
                     {
-                        Console.Write("Deseja cadastrar mais um resultado? (S/N)");
-                        s = Console.ReadLine();
-                        if (s.ToUpper() == "S")
+                        try
                         {
-                            continua = true;
-                            Console.Clear();
+                            Console.WriteLine($"Jogo #{id}:");
+                            Console.Write("Resultado: ");
+                            jogo.Placar = int.Parse(Console.ReadLine());
+                            if (jogo.Placar < 1000)
+                            {
+                                passou = true;
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Resultado deve ser menor que 1000 pontos!");
+                                passou = false;
+                            }
                         }
-                        else if (s.ToUpper() == "N")
+                        catch (FormatException)
                         {
+                            Console.Clear();
+                            Console.WriteLine("Insira um número");
+                            passou = false;
+                        }
+                    } while (!passou);
+
+                    try
+                    {
+                        connection.Open();
+                        var command = new MySqlCommand("INSERT INTO jogo(placar,piorResultado,melhorResultado,mudouPior,MudouMelhor) VALUES(@PLACAR,0,0,0,0)", connection);
+                        command.Parameters.AddWithValue("@PLACAR", jogo.Placar);
+                        command.ExecuteNonQuery();
+                        connection.Close();
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Não entrou no Db!");
+                        Console.ReadLine();
+                        continua = false;
+                    }
+
+                    if (continua)
+                    {
+                        try
+                        {
+                            connection.Open();
+                            var command = new MySqlCommand("SELECT * FROM pontosdb.jogo where jogo.id = @ID", connection);
+                            command.Parameters.Clear();
+                            command.Parameters.AddWithValue("@ID", id);
+
+                            //command.CommandType = CommandType.Text();
+
+                            MySqlDataReader data = command.ExecuteReader();
+                            data.Read();
+
+                            jogo.Id = data.GetInt32(0);
+                            jogo.Placar = data.GetInt32(1);
+
+                            connection.Close();
+
+
+                            jogo.ResultadoRuim(pior);
+                            jogo.MudouResultadoRuim(pior, mudouRuim);
+                            mudouRuim = jogo.MudouPior;
+                            pior = jogo.PiorResultado;
+                            jogo.ResultadoBom(melhor);
+                            jogo.MudouResultadoBom(melhor, mudouBom);
+                            mudouBom = jogo.MudouMelhor;
+                            melhor = jogo.MelhorResultado;
+
+                            connection.Open();
+
+                            var command2 = new MySqlCommand("UPDATE jogo SET piorResultado = @PIOR, melhorResultado = @MELHOR, mudouPior = @MUDOUP, mudouMelhor = @MUDOUM  WHERE jogo.id = @ID", connection);
+                            command2.Parameters.AddWithValue("@PIOR", jogo.PiorResultado);
+                            command2.Parameters.AddWithValue("@MELHOR", jogo.MelhorResultado);
+                            command2.Parameters.AddWithValue("@MUDOUP", jogo.MudouPior);
+                            command2.Parameters.AddWithValue("@MUDOUM", jogo.MudouMelhor);
+                            command2.Parameters.AddWithValue("@ID", jogo.Id);
+
+                            command2.ExecuteNonQuery();
+
+                            connection.Close();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Falha ao Atualizar " + e.Message);
+                            Console.ReadLine();
                             continua = false;
                         }
-                        else
+                    }
+
+                    //Pergunta se será feito mais cadastros ou se sairá da tela
+                    if (continua)
+                    {
+                        string s;
+                        do
                         {
-                            Console.WriteLine("Insira uma resposta válida!");
-                        }
-                    } while (s.ToUpper() != "S" && s.ToUpper() != "N");
-                }
-            } while (continua);
+                            Console.Write("Deseja cadastrar mais um resultado? (S/N)");
+                            s = Console.ReadLine();
+                            if (s.ToUpper() == "S")
+                            {
+                                continua = true;
+                                Console.Clear();
+                            }
+                            else if (s.ToUpper() == "N")
+                            {
+                                continua = false;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Insira uma resposta válida!");
+                            }
+                        } while (s.ToUpper() != "S" && s.ToUpper() != "N");
+                    }
+                } while (continua);
+            }
             Console.Clear();
         }
 
         static void Visualizar()
         {
+            //monta a tabela com todos resultados na tela
             Console.Clear();
             Console.WriteLine("---------------------------------------");
             Console.Write("|");
